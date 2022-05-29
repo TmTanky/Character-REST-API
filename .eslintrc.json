@@ -10,6 +10,8 @@
     "sourceType": "module"
   },
   "plugins": ["@typescript-eslint"],
-  "rules": {},
+  "rules": {
+    "new-cap": 0
+  },
   "ignorePatterns": ["node_modules/", "dist/"]
 }
