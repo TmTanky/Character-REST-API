@@ -3,8 +3,8 @@ import * as call from '../../services/character'
 
 const router = Router()
 
-router.route('/characters').get(call.allCharacters)
-router.route('/character').post(call.createCharacter)
-router.route('/character/:id').get(call.getCharacter)
+router.get('/characters', call.allCharacters)
+router.post('/character', call.createCharacter)
+router.get('/character/:id', call.getCharacter)
 
 export default router

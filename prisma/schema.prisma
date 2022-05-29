@@ -14,4 +14,16 @@ model Character {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   name      String   @unique
   createdAt DateTime @default(now())
+  skills    Skill[]
+}
+
+model Skill {
+  id          String     @id @default(auto()) @map("_id") @db.ObjectId
+  name        String     @unique
+  description String
+  damage      Int
+  energyNeed  Int
+  type        String
+  Character   Character? @relation(fields: [characterId], references: [id])
+  characterId String?    @db.ObjectId
 }
