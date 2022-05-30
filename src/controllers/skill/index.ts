@@ -3,7 +3,7 @@ import * as call from '../../services/skill'
 
 const router = Router()
 
-// router.post('/skill', call.createSkill)
+router.get('/skills', call.getAllSkills)
 router.route('/skill').get(call.querySkill).post(call.createSkill)
 
 export default router
