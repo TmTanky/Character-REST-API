@@ -63,3 +63,35 @@ export const getAllSkills: RequestHandler = async (req, res, next) => {
     return next(createError(500, 'Something went wrong.'))
   }
 }
+
+export const updateSkill: RequestHandler = async (req, res, next) => {
+  const { id } = req.params
+  const { name, description, damage, energyNeed, type } = req.body
+  try {
+    const client = await connectClient()
+    const toBeUpdated = await client.skill.update({
+      data: {
+        name,
+        description,
+        energyNeed,
+        damage,
+        type
+      },
+      where: { id }
+    })
+
+    if (!toBeUpdated) {
+      return next(createError(404, 'Skill not found.'))
+    }
+
+    return res.status(201).json({
+      message: 'Update Successful',
+      data: toBeUpdated
+    })
+  } catch (error) {
+    const { code } = error as any as { code: string }
+
+    if (code === 'P2025') return next(createError(400, 'Skill not found.'))
+    return next(createError(500, 'Something went wrong.'))
+  }
+}
