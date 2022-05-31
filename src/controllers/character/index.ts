@@ -6,5 +6,6 @@ const router = Router()
 router.get('/characters', call.allCharacters)
 router.post('/character', call.createCharacter)
 router.get('/character/:id', call.getCharacter)
+router.put('/character/:id', call.updateCharacter)
 
 export default router

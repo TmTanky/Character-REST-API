@@ -68,3 +68,27 @@ export const getCharacter: RequestHandler = async (req, res, next) => {
     return next(createError(500, 'Something went wrong.'))
   }
 }
+
+export const updateCharacter: RequestHandler = async (req, res, next) => {
+  const { id } = req.params
+  const { name } = req.body as { name: string }
+  try {
+    const client = await connectClient()
+    const toBeUpdated = await client.character.update({
+      data: {
+        name: name
+      },
+      where: { id }
+    })
+
+    return res.status(201).json({
+      message: 'Update Successful',
+      data: toBeUpdated
+    })
+  } catch (error) {
+    const { code } = error as any as { code: string }
+
+    if (code === 'P2025') return next(createError(400, 'Character not found.'))
+    return next(createError(500, 'Something went wrong.'))
+  }
+}
