@@ -5,6 +5,8 @@ import { connectClient } from './client'
 export const createCharacter: RequestHandler = async (req, res, next) => {
   const { name } = req.body as { name: string }
 
+  if (!name) return next(createError(400, 'Name is required.'))
+
   try {
     const client = await connectClient()
     const character = await client.character.create({
@@ -40,6 +42,8 @@ export const allCharacters: RequestHandler = async (req, res, next) => {
 export const getCharacter: RequestHandler = async (req, res, next) => {
   const { id } = req.params
 
+  if (!id) return next(createError(400, 'Id is required.'))
+
   try {
     const client = await connectClient()
     const queriedCharacter = await client.character.findUnique({
@@ -72,6 +76,9 @@ export const getCharacter: RequestHandler = async (req, res, next) => {
 export const updateCharacter: RequestHandler = async (req, res, next) => {
   const { id } = req.params
   const { name } = req.body as { name: string }
+
+  if (!id || !name) return next(createError(400, 'Id/Name is required.'))
+
   try {
     const client = await connectClient()
     const toBeUpdated = await client.character.update({
@@ -81,6 +88,10 @@ export const updateCharacter: RequestHandler = async (req, res, next) => {
       where: { id }
     })
 
+    if (!toBeUpdated) {
+      return next(createError(404, 'Character not found.'))
+    }
+
     return res.status(201).json({
       message: 'Update Successful',
       data: toBeUpdated
@@ -89,6 +100,30 @@ export const updateCharacter: RequestHandler = async (req, res, next) => {
     const { code } = error as any as { code: string }
 
     if (code === 'P2025') return next(createError(400, 'Character not found.'))
+    return next(createError(500, 'Something went wrong.'))
+  }
+}
+
+export const deleteCharacter: RequestHandler = async (req, res, next) => {
+  const { id } = req.params
+
+  if (!id) return next(createError(400, 'Id/Name is required.'))
+
+  try {
+    const client = await connectClient()
+    const toBeDeleted = await client.character.delete({
+      where: {
+        id
+      }
+    })
+
+    if (!toBeDeleted) return next(createError(404, 'Character not found.'))
+
+    return res.status(204)
+  } catch (error) {
+    const { code } = error as any as { code: string }
+    if (code === 'P2025') return next(createError(400, 'Character not found.'))
+
     return next(createError(500, 'Something went wrong.'))
   }
 }

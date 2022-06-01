@@ -5,6 +5,10 @@ import { connectClient } from './client'
 export const createSkill: RequestHandler = async (req, res, next) => {
   const { name, description, damage, energyNeed, type } = req.body
 
+  if (!name || !description || !damage || !energyNeed || !type) {
+    return next(createError(400, 'All fields are required.'))
+  }
+
   try {
     const client = await connectClient()
     const newSkill = await client.skill.create({
@@ -28,6 +32,8 @@ export const createSkill: RequestHandler = async (req, res, next) => {
 
 export const querySkill: RequestHandler = async (req, res, next) => {
   const { name } = req.query as { name: string }
+
+  if (!name) return next(createError(400, 'Name is required.'))
 
   try {
     const client = await connectClient()
@@ -67,6 +73,11 @@ export const getAllSkills: RequestHandler = async (req, res, next) => {
 export const updateSkill: RequestHandler = async (req, res, next) => {
   const { id } = req.params
   const { name, description, damage, energyNeed, type } = req.body
+
+  if (!name || !description || !damage || !energyNeed || !type || id) {
+    return next(createError(400, 'All fields are required.'))
+  }
+
   try {
     const client = await connectClient()
     const toBeUpdated = await client.skill.update({
@@ -90,8 +101,30 @@ export const updateSkill: RequestHandler = async (req, res, next) => {
     })
   } catch (error) {
     const { code } = error as any as { code: string }
-
     if (code === 'P2025') return next(createError(400, 'Skill not found.'))
+
+    return next(createError(500, 'Something went wrong.'))
+  }
+}
+
+export const deleteSkill: RequestHandler = async (req, res, next) => {
+  const { id } = req.params
+
+  if (!id) return next(createError(400, 'Id is required.'))
+
+  try {
+    const client = await connectClient()
+    await client.skill.delete({
+      where: {
+        id
+      }
+    })
+
+    return res.status(204)
+  } catch (error) {
+    const { code } = error as any as { code: string }
+    if (code === 'P2025') return next(createError(400, 'Skill not found.'))
+
     return next(createError(500, 'Something went wrong.'))
   }
 }
