@@ -5,7 +5,10 @@ const router = Router()
 
 router.get('/characters', call.allCharacters)
 router.post('/character', call.createCharacter)
-router.get('/character/:id', call.getCharacter)
-router.put('/character/:id', call.updateCharacter)
+router
+  .route('/character/:id')
+  .get(call.getCharacter)
+  .put(call.updateCharacter)
+  .delete(call.deleteCharacter)
 
 export default router
